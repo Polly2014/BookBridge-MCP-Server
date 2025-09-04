@@ -1,0 +1,14 @@
+# Client-side requirements for BookBridge MCP
+# These packages are needed by clients that use the BookBridge MCP server
+
+# OpenAI API for LLM interactions
+openai>=1.10.0
+
+# MCP client library (if using a specific MCP client)
+mcp>=1.0.0
+
+# Async HTTP client for API calls
+httpx>=0.25.0
+
+# Additional utilities
+pathlib
