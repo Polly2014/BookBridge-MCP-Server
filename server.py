@@ -189,7 +189,7 @@ class BookBridgeMCPServer:
             return self._scan_documents_impl(directory)
         
         @self.mcp.tool()
-        def word_to_markdown(document_path: str) -> Dict[str, Any]:
+        async def word_to_markdown(document_path: str) -> Dict[str, Any]:
             """
             Convert a Word document to Markdown format
             
@@ -202,7 +202,7 @@ class BookBridgeMCPServer:
             try:
                 self.stats["total_requests"] += 1
                 logger.info(f"Converting Word to Markdown: {document_path}")
-                result = asyncio.run(self.doc_processor.word_to_markdown(document_path))
+                result = await self.doc_processor.word_to_markdown(document_path)
                 return {
                     "status": "success",
                     "message": "Word document successfully converted to Markdown",
@@ -217,7 +217,7 @@ class BookBridgeMCPServer:
                 }
 
         @self.mcp.tool()
-        def markdown_to_word(
+        async def markdown_to_word(
             markdown_path: str,
             output_path: Optional[str] = None
         ) -> Dict[str, Any]:
@@ -234,7 +234,7 @@ class BookBridgeMCPServer:
             try:
                 self.stats["total_requests"] += 1
                 logger.info(f"Converting Markdown to Word: {markdown_path}")
-                result = asyncio.run(self.doc_processor.markdown_to_word(markdown_path, output_path))
+                result = await self.doc_processor.markdown_to_word(markdown_path, output_path)
                 
                 return {
                     "status": "success",
@@ -252,7 +252,7 @@ class BookBridgeMCPServer:
                 }
 
         @self.mcp.tool()
-        def get_document_content(document_path: str) -> Dict[str, Any]:
+        async def get_document_content(document_path: str) -> Dict[str, Any]:
             """
             Get document content for client-side processing
             
@@ -278,7 +278,7 @@ class BookBridgeMCPServer:
                         content = f.read()
                 elif doc_path.suffix.lower() == '.docx':
                     # Convert to markdown first for easier processing
-                    result = asyncio.run(self.doc_processor.word_to_markdown(str(doc_path)))
+                    result = await self.doc_processor.word_to_markdown(str(doc_path))
                     content = result["content"]
                 else:
                     return {
@@ -303,7 +303,7 @@ class BookBridgeMCPServer:
                 }
 
         @self.mcp.tool()
-        def save_translated_content(
+        async def save_translated_content(
             original_path: str,
             translated_content: str,
             target_language: str = "english",
@@ -350,10 +350,10 @@ class BookBridgeMCPServer:
                         f.write(translated_content)
                     
                     # Convert to Word
-                    word_result = asyncio.run(self.doc_processor.markdown_to_word(
+                    word_result = await self.doc_processor.markdown_to_word(
                         str(temp_md), 
                         str(output_dir / f"{base_name}_{target_language}.docx")
-                    ))
+                    )
                     
                     # Clean up temp file
                     temp_md.unlink()
@@ -380,7 +380,7 @@ class BookBridgeMCPServer:
                 }
 
         @self.mcp.tool()
-        def batch_prepare_documents(
+        async def batch_prepare_documents(
             input_directory: str,
             file_pattern: str = "*.docx"
         ) -> Dict[str, Any]:
@@ -418,7 +418,7 @@ class BookBridgeMCPServer:
                 for file_path in files:
                     try:
                         # Get document content for each file
-                        doc_result = self.get_document_content(str(file_path))
+                        doc_result = await self.get_document_content(str(file_path))
                         
                         if doc_result["status"] == "success":
                             prepared_docs.append({
@@ -467,7 +467,7 @@ class BookBridgeMCPServer:
                 }
 
         @self.mcp.tool()
-        def list_documents() -> Dict[str, Any]:
+        async def list_documents() -> Dict[str, Any]:
             """
             List all available documents in the system
             
@@ -476,7 +476,7 @@ class BookBridgeMCPServer:
             """
             try:
                 self.stats["total_requests"] += 1
-                documents = asyncio.run(self.resource_manager.list_all_documents())
+                documents = await self.resource_manager.list_all_documents()
                 return {
                     "status": "success",
                     "documents": documents
@@ -541,8 +541,13 @@ class BookBridgeMCPServer:
                                 content["raw_content"] = f.read()
                         elif doc_path.suffix.lower() == '.docx':
                             # Convert to markdown for easier client processing
-                            md_result = asyncio.run(self.doc_processor.word_to_markdown(str(doc_path)))
-                            content["markdown_content"] = md_result["content"]
+                            try:
+                                # Since we can't use async in resource functions, 
+                                # we'll provide a note that conversion is available via tools
+                                content["conversion_available"] = True
+                                content["note"] = "Use word_to_markdown tool for content extraction"
+                            except Exception as e:
+                                content["conversion_error"] = str(e)
                     except Exception as e:
                         content["content_error"] = str(e)
                 
@@ -682,17 +687,139 @@ class BookBridgeMCPServer:
             content_type: str = "book_chapter"
         ) -> str:
             """Professional translation prompt template for client-side LLM"""
-            return asyncio.run(self.prompts.get_translation_prompt(source_language, target_language, content_type))
+            # Since prompts can't be async, we'll create the prompt directly
+            self.stats["prompts_generated"] += 1
+            
+            prompt = f"""You are a professional translator specializing in {source_language} to {target_language} translation.
+
+**Translation Task:**
+- Source Language: {source_language}
+- Target Language: {target_language}
+- Content Type: {content_type}
+
+**Quality Standards:**
+1. **Accuracy**: Maintain the original meaning and context
+2. **Fluency**: Produce natural, readable {target_language}
+3. **Style**: Preserve the author's voice and tone
+4. **Consistency**: Use consistent terminology throughout
+
+**Content-Specific Guidelines:**
+"""
+            
+            if content_type == "book_chapter":
+                prompt += """
+- Preserve chapter structure and formatting
+- Maintain character names and dialogue style
+- Keep cultural context when appropriate
+- Ensure narrative flow remains engaging"""
+            elif content_type == "academic":
+                prompt += """
+- Maintain academic tone and terminology
+- Preserve citations and references
+- Keep technical terms accurate
+- Ensure logical structure is clear"""
+            elif content_type == "technical":
+                prompt += """
+- Preserve technical accuracy
+- Maintain step-by-step instructions
+- Keep code examples intact
+- Ensure clarity for technical audience"""
+            elif content_type == "creative":
+                prompt += """
+- Preserve creative voice and style
+- Maintain emotional impact
+- Keep literary devices when possible
+- Ensure artistic intent is preserved"""
+            else:
+                prompt += """
+- Maintain appropriate tone for content
+- Preserve structure and formatting
+- Ensure clarity and readability
+- Keep original intent intact"""
+            
+            prompt += f"""
+
+**Instructions:**
+1. Translate the provided {source_language} text to {target_language}
+2. Maintain all markdown formatting if present
+3. Preserve paragraph breaks and structure
+4. Provide natural, fluent translation
+5. Note any cultural references that need explanation
+
+Begin translation:"""
+            
+            return prompt
         
         @self.mcp.prompt("quality_check_prompt")
         def quality_check_prompt_template() -> str:
             """Translation quality assessment prompt for client-side LLM"""
-            return asyncio.run(self.prompts.get_quality_check_prompt())
+            self.stats["prompts_generated"] += 1
+            return """You are a translation quality assessor. Review the provided translation and evaluate it based on:
+
+**Quality Criteria:**
+1. **Accuracy** (1-10): How well does the translation preserve the original meaning?
+2. **Fluency** (1-10): How natural and readable is the target language?
+3. **Consistency** (1-10): Is terminology and style consistent throughout?
+4. **Completeness** (1-10): Are all parts of the source text translated?
+
+**Assessment Format:**
+- Accuracy: [score]/10 - [brief explanation]
+- Fluency: [score]/10 - [brief explanation]  
+- Consistency: [score]/10 - [brief explanation]
+- Completeness: [score]/10 - [brief explanation]
+
+**Overall Quality:** [average score]/10
+
+**Recommendations:**
+- List specific areas for improvement
+- Suggest alternative translations for problematic sections
+- Note any cultural or contextual considerations
+
+**Summary:**
+Provide a brief overall assessment and recommendation (Accept/Revise/Reject).
+"""
         
         @self.mcp.prompt("chapter_analysis_prompt")
         def chapter_analysis_prompt_template() -> str:
             """Chapter structure analysis prompt for client-side LLM"""
-            return asyncio.run(self.prompts.get_chapter_analysis_prompt())
+            self.stats["prompts_generated"] += 1
+            return """You are a literary analyst specializing in chapter structure and content analysis.
+
+**Analysis Task:**
+Analyze the provided chapter and identify:
+
+**1. Structure Elements:**
+- Chapter title and number
+- Section breaks and subheadings
+- Paragraph organization
+- Dialogue vs. narrative distribution
+
+**2. Content Analysis:**
+- Main themes and topics
+- Key characters introduced or developed
+- Plot advancement and story beats
+- Setting and time references
+
+**3. Translation Considerations:**
+- Cultural references that need context
+- Idiomatic expressions requiring adaptation
+- Technical or specialized terminology
+- Emotional tone and style elements
+
+**4. Formatting Notes:**
+- Special formatting (emphasis, lists, etc.)
+- Chapter transitions and breaks
+- Any non-text elements to preserve
+
+**Output Format:**
+Structure: [brief description]
+Content: [key themes and plot points]
+Translation Notes: [specific considerations]
+Formatting: [elements to preserve]
+
+**Recommendation:**
+Suggested approach for translating this chapter effectively.
+"""
 
         @self.mcp.prompt("batch_translation_prompt")
         def batch_translation_prompt_template(
