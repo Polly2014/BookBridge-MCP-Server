@@ -1,5 +1,10 @@
 # BookBridge-MCP
 
+[![GitHub](https://img.shields.io/badge/GitHub-BookBridge--MCP--Server-blue?logo=github)](https://github.com/Polly2014/BookBridge-MCP-Server)
+[![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)](https://www.python.org/)
+[![Poetry](https://img.shields.io/badge/Poetry-Dependency%20Management-blue?logo=poetry)](https://python-poetry.org/)
+[![FastMCP](https://img.shields.io/badge/FastMCP-2.12.2+-green)](https://github.com/pydantic/fastmcp)
+
 A powerful Model Context Protocol (MCP) server for Chinese-to-English book translation and document processing, built with FastMCP framework.
 
 ## 🌉 Overview
@@ -41,6 +46,10 @@ BookBridge-MCP provides a comprehensive solution for translating Chinese books a
 
 ### 1. Install Dependencies
 ```bash
+# Clone the repository
+git clone https://github.com/Polly2014/BookBridge-MCP-Server.git
+cd BookBridge-MCP-Server
+
 # Automated setup (recommended)
 python setup_poetry.py
 
