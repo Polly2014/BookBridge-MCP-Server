@@ -41,8 +41,52 @@ class DocumentProcessor:
             if not word_file.exists():
                 raise FileNotFoundError(f"Word document not found: {word_path}")
             
-            # Read Word document
-            doc = docx.Document(word_path)
+            # Validate file size
+            if word_file.stat().st_size == 0:
+                raise ValueError(f"File is empty: {word_path}")
+            
+            # Validate it's a valid ZIP file (docx is a ZIP archive)
+            try:
+                import zipfile
+                with zipfile.ZipFile(str(word_file.absolute()), 'r') as zf:
+                    # Check for required docx structure
+                    required_files = ['word/document.xml', '[Content_Types].xml']
+                    missing_files = [f for f in required_files if f not in zf.namelist()]
+                    if missing_files:
+                        raise ValueError(f"Invalid docx structure, missing: {missing_files}")
+                    logger.info(f"File validation passed for: {word_path}")
+            except zipfile.BadZipFile:
+                raise ValueError(f"File is not a valid ZIP/docx archive: {word_path}")
+            except ValueError:
+                raise  # Re-raise validation errors
+            except Exception as e:
+                logger.warning(f"ZIP validation warning for {word_path}: {e}")
+            
+            # Convert to absolute path and handle special characters
+            abs_path = word_file.resolve()
+            
+            # Read Word document using different approaches for problematic filenames
+            doc = None
+            try:
+                # First try with the absolute path
+                doc = docx.Document(str(abs_path))
+            except Exception as e1:
+                logger.warning(f"Failed to load with absolute path: {e1}")
+                try:
+                    # Try with original path
+                    doc = docx.Document(word_path)
+                except Exception as e2:
+                    logger.warning(f"Failed to load with original path: {e2}")
+                    try:
+                        # Try reading as binary and passing to docx
+                        with open(abs_path, 'rb') as f:
+                            doc = docx.Document(f)
+                    except Exception as e3:
+                        # If all methods fail, raise the original error with context
+                        raise Exception(f"Unable to load Word document '{word_path}'. Tried multiple approaches. Last error: {e3}")
+            
+            if doc is None:
+                raise Exception(f"Failed to load Word document: {word_path}")
             
             # Extract content and convert to markdown
             markdown_content = []

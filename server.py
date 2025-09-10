@@ -98,6 +98,49 @@ class BookBridgeMCPServer:
         script_dir = Path(__file__).parent.absolute()
         return str(script_dir / default_relative_path.lstrip('./'))
 
+    async def _get_document_content_impl(self, document_path: str) -> Dict[str, Any]:
+        """
+        Internal implementation of document content extraction.
+        This is shared between tools and batch processing.
+        """
+        try:
+            doc_path = Path(document_path)
+            if not doc_path.exists():
+                return {
+                    "status": "error",
+                    "message": f"Document not found: {document_path}"
+                }
+            
+            # Read document content based on type
+            if doc_path.suffix.lower() in ['.md', '.txt']:
+                with open(doc_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            elif doc_path.suffix.lower() == '.docx':
+                # Convert to markdown first for easier processing
+                result = await self.doc_processor.word_to_markdown(str(doc_path))
+                content = result["content"]
+            else:
+                return {
+                    "status": "error",
+                    "message": f"Unsupported file type: {doc_path.suffix}"
+                }
+            
+            return {
+                "status": "success",
+                "document_path": str(doc_path),
+                "content": content,
+                "file_size": doc_path.stat().st_size,
+                "file_type": doc_path.suffix.lower(),
+                "modified": datetime.fromtimestamp(doc_path.stat().st_mtime).isoformat()
+            }
+            
+        except Exception as e:
+            logger.error(f"Error getting document content: {e}")
+            return {
+                "status": "error",
+                "message": f"Failed to get document content: {str(e)}"
+            }
+
     def _scan_documents_impl(self, directory: str = None) -> Dict[str, Any]:
         """
         Internal implementation of document scanning functionality.
@@ -262,45 +305,8 @@ class BookBridgeMCPServer:
             Returns:
                 Dictionary with document content and metadata
             """
-            try:
-                self.stats["total_requests"] += 1
-                
-                doc_path = Path(document_path)
-                if not doc_path.exists():
-                    return {
-                        "status": "error",
-                        "message": f"Document not found: {document_path}"
-                    }
-                
-                # Read document content based on type
-                if doc_path.suffix.lower() in ['.md', '.txt']:
-                    with open(doc_path, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                elif doc_path.suffix.lower() == '.docx':
-                    # Convert to markdown first for easier processing
-                    result = await self.doc_processor.word_to_markdown(str(doc_path))
-                    content = result["content"]
-                else:
-                    return {
-                        "status": "error",
-                        "message": f"Unsupported file type: {doc_path.suffix}"
-                    }
-                
-                return {
-                    "status": "success",
-                    "document_path": str(doc_path),
-                    "content": content,
-                    "file_size": doc_path.stat().st_size,
-                    "file_type": doc_path.suffix.lower(),
-                    "modified": datetime.fromtimestamp(doc_path.stat().st_mtime).isoformat()
-                }
-                
-            except Exception as e:
-                logger.error(f"Error getting document content: {e}")
-                return {
-                    "status": "error",
-                    "message": f"Failed to get document content: {str(e)}"
-                }
+            self.stats["total_requests"] += 1
+            return await self._get_document_content_impl(document_path)
 
         @self.mcp.tool()
         async def save_translated_content(
@@ -417,8 +423,8 @@ class BookBridgeMCPServer:
                 
                 for file_path in files:
                     try:
-                        # Get document content for each file
-                        doc_result = await self.get_document_content(str(file_path))
+                        # Get document content for each file directly
+                        doc_result = await self._get_document_content_impl(str(file_path))
                         
                         if doc_result["status"] == "success":
                             prepared_docs.append({
