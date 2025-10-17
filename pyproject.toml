@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bookbridge-mcp"
-version = "1.0.0"
+version = "1.0.1"
 description = "A powerful Model Context Protocol (MCP) server for Chinese-to-English book translation and document processing"
 authors = ["Polly2014 <your.email@example.com>"]
 readme = "README.md"
