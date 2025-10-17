@@ -121,13 +121,33 @@ poetry run python examples/client_example.py
 # All checks: make check (or make.bat check on Windows)
 ```
 
-### Method 3: Using npx-like approach with uv
+### Method 3: Using PyPI with uvx (Now Available!)
 
-If you prefer an npx-like experience, you can also use:
+**The package is now published to PyPI!** You can run it with:
 
 ```bash
-# Run directly with uv (if published to PyPI)
+# Run directly from PyPI
+uvx --from bookbridge-mcp bookbridge-server
+
+# Or shorter version (if executable name matches)
 uvx bookbridge-mcp
+```
+
+**Update your MCP configuration** to use PyPI:
+```json
+{
+  "servers": {
+    "Book-Bridge-MCP": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "bookbridge-mcp",
+        "bookbridge-server"
+      ],
+      "type": "stdio"
+    }
+  }
+}
 ```
 
 ---
