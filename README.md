@@ -4,6 +4,12 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)](https://www.python.org/)
 [![Poetry](https://img.shields.io/badge/Poetry-Dependency%20Management-blue?logo=poetry)](https://python-poetry.org/)
 [![FastMCP](https://img.shields.io/badge/FastMCP-2.12.2+-green)](https://github.com/pydantic/fastmcp)
+[![uv](https://img.shields.io/badge/uv-compatible-green?logo=python)](https://docs.astral.sh/uv/)
+
+> 🚀 **Now with uvx support!** Run directly from GitHub with zero installation: 
+> ```bash
+> uvx --from git+https://github.com/Polly2014/BookBridge-MCP-Server bookbridge-server
+> ```
 
 A powerful Model Context Protocol (MCP) server for Chinese-to-English book translation and document processing, built with FastMCP framework.
 
@@ -13,6 +19,7 @@ BookBridge-MCP provides a comprehensive solution for translating Chinese books a
 
 ## ✨ Key Features
 
+- **Zero Installation Required**: Run directly from GitHub using `uvx`
 - **Document Processing**: Convert between Word (.docx) and Markdown formats
 - **Smart Resource Management**: Organize and track translation projects
 - **Professional Translation Prompts**: Specialized prompts for different content types
@@ -44,7 +51,35 @@ BookBridge-MCP provides a comprehensive solution for translating Chinese books a
 
 ## ⚡ Quick Start
 
-### 1. Install Dependencies
+### Method 1: Using uvx (Recommended - Run Directly from GitHub)
+
+**No installation needed!** Run directly from GitHub using `uvx`:
+
+```bash
+# Run directly from GitHub
+uvx --from git+https://github.com/Polly2014/BookBridge-MCP-Server bookbridge-server
+```
+
+**Update your MCP configuration** (`mcp.json`):
+```json
+{
+  "servers": {
+    "Book-Bridge-MCP": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/Polly2014/BookBridge-MCP-Server",
+        "bookbridge-server"
+      ],
+      "type": "stdio"
+    }
+  }
+}
+```
+
+### Method 2: Local Development Installation
+
+#### 1. Install Dependencies
 ```bash
 # Clone the repository
 git clone https://github.com/Polly2014/BookBridge-MCP-Server.git
@@ -57,7 +92,7 @@ python setup_poetry.py
 poetry install
 ```
 
-### 2. Test Environment  
+#### 2. Test Environment  
 ```bash
 # Verify installation
 poetry run python test_environment.py
@@ -66,24 +101,33 @@ poetry run python test_environment.py
 poetry run python test_simple.py
 ```
 
-### 3. Start Server
+#### 3. Start Server
 ```bash
 # Start the MCP server
 poetry run python start.py
 ```
 
-### 4. Run Client Example
+#### 4. Run Client Example
 ```bash
 # Test with client example
 poetry run python examples/client_example.py
 ```
 
-### 5. Development Commands
+#### 5. Development Commands
 ```bash
 # Run tests: poetry run pytest
 # Format code: poetry run black .
 # Type checking: poetry run mypy src/
 # All checks: make check (or make.bat check on Windows)
+```
+
+### Method 3: Using npx-like approach with uv
+
+If you prefer an npx-like experience, you can also use:
+
+```bash
+# Run directly with uv (if published to PyPI)
+uvx bookbridge-mcp
 ```
 
 ---
@@ -204,6 +248,69 @@ BookBridge-MCP/
 ```
 
 ## 🔧 Configuration
+
+### MCP Client Configuration
+
+You can configure your MCP client in three ways:
+
+#### Option 1: Using uvx with GitHub (Recommended)
+
+Edit your `mcp.json` file:
+
+```json
+{
+  "servers": {
+    "Book-Bridge-MCP": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/Polly2014/BookBridge-MCP-Server",
+        "bookbridge-server"
+      ],
+      "type": "stdio"
+    }
+  }
+}
+```
+
+**Advantages:**
+- ✅ No local installation required
+- ✅ Always runs the latest version from GitHub
+- ✅ Automatic dependency management via uv
+- ✅ Clean and simple configuration
+
+#### Option 2: Using Local Installation
+
+```json
+{
+  "servers": {
+    "Book-Bridge-MCP": {
+      "command": "python",
+      "args": [
+        "D:\\path\\to\\BookBridge-MCP\\server.py"
+      ],
+      "cwd": "D:\\path\\to\\BookBridge-MCP",
+      "type": "stdio"
+    }
+  }
+}
+```
+
+#### Option 3: Using npx-like syntax (if published to PyPI)
+
+```json
+{
+  "servers": {
+    "Book-Bridge-MCP": {
+      "command": "uvx",
+      "args": ["bookbridge-mcp"],
+      "type": "stdio"
+    }
+  }
+}
+```
+
+### Server Configuration
 
 Edit `config.env` to customize settings:
 

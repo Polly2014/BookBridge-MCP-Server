@@ -2,13 +2,13 @@
 name = "bookbridge-mcp"
 version = "1.0.0"
 description = "A powerful Model Context Protocol (MCP) server for Chinese-to-English book translation and document processing"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["Polly2014 <your.email@example.com>"]
 readme = "README.md"
-packages = [{include = "src"}]
+packages = [{include = "src"}, {include = "server.py"}]
 license = "MIT"
-homepage = "https://github.com/your-username/BookBridge-MCP"
-repository = "https://github.com/your-username/BookBridge-MCP"
-documentation = "https://github.com/your-username/BookBridge-MCP#readme"
+homepage = "https://github.com/Polly2014/BookBridge-MCP-Server"
+repository = "https://github.com/Polly2014/BookBridge-MCP-Server"
+documentation = "https://github.com/Polly2014/BookBridge-MCP-Server#readme"
 keywords = ["mcp", "translation", "document-processing", "chinese-english", "fastmcp"]
 classifiers = [
     "Development Status :: 4 - Beta",
