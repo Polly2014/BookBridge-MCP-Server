@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bookbridge-mcp"
-version = "1.0.1"
+version = "1.0.2"
 description = "A powerful Model Context Protocol (MCP) server for Chinese-to-English book translation and document processing"
 authors = ["Polly2014 <your.email@example.com>"]
 readme = "README.md"
@@ -48,7 +48,8 @@ mcp = ">=1.0.0"
 httpx = ">=0.25.0"
 
 [tool.poetry.scripts]
-bookbridge-server = "server:main"
+bookbridge-mcp = "server:main"
+bookbridge-server = "server:main"  # Backward compatibility alias
 
 [tool.black]
 line-length = 100

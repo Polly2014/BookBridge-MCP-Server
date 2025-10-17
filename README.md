@@ -8,14 +8,14 @@
 [![uv](https://img.shields.io/badge/uv-compatible-green?logo=python)](https://docs.astral.sh/uv/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> 🎉 **Now available on PyPI!** Install with one command:
+> 🎉 **Now available on PyPI!** Install with one simple command:
 > ```bash
-> uvx --from bookbridge-mcp bookbridge-server
+> uvx bookbridge-mcp
 > ```
 > 
 > Or run directly from GitHub:
 > ```bash
-> uvx --from git+https://github.com/Polly2014/BookBridge-MCP-Server bookbridge-server
+> uvx --from git+https://github.com/Polly2014/BookBridge-MCP-Server bookbridge-mcp
 > ```
 
 A powerful Model Context Protocol (MCP) server for Chinese-to-English book translation and document processing, built with FastMCP framework.
@@ -26,7 +26,7 @@ BookBridge-MCP provides a comprehensive solution for translating Chinese books a
 
 ## ✨ Key Features
 
-- **📦 Available on PyPI**: Install with `uvx --from bookbridge-mcp bookbridge-server`
+- **📦 Available on PyPI**: Install with `uvx bookbridge-mcp`
 - **Zero Installation Required**: Run directly from PyPI or GitHub using `uvx`
 - **Document Processing**: Convert between Word (.docx) and Markdown formats
 - **Smart Resource Management**: Organize and track translation projects
@@ -64,8 +64,8 @@ BookBridge-MCP provides a comprehensive solution for translating Chinese books a
 **The easiest way - published on PyPI!**
 
 ```bash
-# Run directly from PyPI
-uvx --from bookbridge-mcp bookbridge-server
+# Run directly from PyPI - simple and clean!
+uvx bookbridge-mcp
 ```
 
 **Update your MCP configuration** (`mcp.json`):
@@ -74,11 +74,7 @@ uvx --from bookbridge-mcp bookbridge-server
   "servers": {
     "Book-Bridge-MCP": {
       "command": "uvx",
-      "args": [
-        "--from",
-        "bookbridge-mcp",
-        "bookbridge-server"
-      ],
+      "args": ["bookbridge-mcp"],
       "type": "stdio"
     }
   }
@@ -100,7 +96,7 @@ uvx --from bookbridge-mcp bookbridge-server
 
 ```bash
 # Run directly from GitHub
-uvx --from git+https://github.com/Polly2014/BookBridge-MCP-Server bookbridge-server
+uvx --from git+https://github.com/Polly2014/BookBridge-MCP-Server bookbridge-mcp
 ```
 
 **Update your MCP configuration** (`mcp.json`):
@@ -112,7 +108,7 @@ uvx --from git+https://github.com/Polly2014/BookBridge-MCP-Server bookbridge-ser
       "args": [
         "--from",
         "git+https://github.com/Polly2014/BookBridge-MCP-Server",
-        "bookbridge-server"
+        "bookbridge-mcp"
       ],
       "type": "stdio"
     }
@@ -178,8 +174,8 @@ poetry run python examples/client_example.py
 
 | Method | Command | Use Case | Installation Time |
 |--------|---------|----------|-------------------|
-| **PyPI** 🌟 | `uvx --from bookbridge-mcp bookbridge-server` | General use, production | ⚡ Fastest |
-| **GitHub** | `uvx --from git+https://... bookbridge-server` | Latest features, testing | ⚡ Fast |
+| **PyPI** 🌟 | `uvx bookbridge-mcp` | General use, production | ⚡ Fastest |
+| **GitHub** | `uvx --from git+https://... bookbridge-mcp` | Latest features, testing | ⚡ Fast |
 | **Local** | `poetry install && poetry run ...` | Development, contributions | 🐢 Requires setup |
 
 ---
@@ -192,7 +188,9 @@ If you prefer traditional pip installation:
 # Install from PyPI
 pip install bookbridge-mcp
 
-# Run the server
+# Run the server (both commands work)
+bookbridge-mcp
+# or
 bookbridge-server
 ```
 

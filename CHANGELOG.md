@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved batch processing performance
 - Translation memory integration
 
+## [1.0.2] - 2025-10-17
+
+### Changed
+- Added `bookbridge-mcp` as the primary executable name (unified with package name)
+- Kept `bookbridge-server` as an alias for backward compatibility
+- Now supports shorter command: `uvx bookbridge-mcp`
+
+### Breaking Changes
+None - both `bookbridge-mcp` and `bookbridge-server` work
+
 ## [1.0.1] - 2025-10-17
 
 ### Changed
