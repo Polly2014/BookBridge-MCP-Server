@@ -1,12 +1,19 @@
 # BookBridge-MCP
 
 [![GitHub](https://img.shields.io/badge/GitHub-BookBridge--MCP--Server-blue?logo=github)](https://github.com/Polly2014/BookBridge-MCP-Server)
+[![PyPI](https://img.shields.io/pypi/v/bookbridge-mcp?logo=pypi&logoColor=white)](https://pypi.org/project/bookbridge-mcp/)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)](https://www.python.org/)
 [![Poetry](https://img.shields.io/badge/Poetry-Dependency%20Management-blue?logo=poetry)](https://python-poetry.org/)
 [![FastMCP](https://img.shields.io/badge/FastMCP-2.12.2+-green)](https://github.com/pydantic/fastmcp)
 [![uv](https://img.shields.io/badge/uv-compatible-green?logo=python)](https://docs.astral.sh/uv/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> 🚀 **Now with uvx support!** Run directly from GitHub with zero installation: 
+> 🎉 **Now available on PyPI!** Install with one command:
+> ```bash
+> uvx --from bookbridge-mcp bookbridge-server
+> ```
+> 
+> Or run directly from GitHub:
 > ```bash
 > uvx --from git+https://github.com/Polly2014/BookBridge-MCP-Server bookbridge-server
 > ```
@@ -19,7 +26,8 @@ BookBridge-MCP provides a comprehensive solution for translating Chinese books a
 
 ## ✨ Key Features
 
-- **Zero Installation Required**: Run directly from GitHub using `uvx`
+- **📦 Available on PyPI**: Install with `uvx --from bookbridge-mcp bookbridge-server`
+- **Zero Installation Required**: Run directly from PyPI or GitHub using `uvx`
 - **Document Processing**: Convert between Word (.docx) and Markdown formats
 - **Smart Resource Management**: Organize and track translation projects
 - **Professional Translation Prompts**: Specialized prompts for different content types
@@ -51,9 +59,44 @@ BookBridge-MCP provides a comprehensive solution for translating Chinese books a
 
 ## ⚡ Quick Start
 
-### Method 1: Using uvx (Recommended - Run Directly from GitHub)
+### Method 1: Using PyPI with uvx (Recommended! 🌟)
 
-**No installation needed!** Run directly from GitHub using `uvx`:
+**The easiest way - published on PyPI!**
+
+```bash
+# Run directly from PyPI
+uvx --from bookbridge-mcp bookbridge-server
+```
+
+**Update your MCP configuration** (`mcp.json`):
+```json
+{
+  "servers": {
+    "Book-Bridge-MCP": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "bookbridge-mcp",
+        "bookbridge-server"
+      ],
+      "type": "stdio"
+    }
+  }
+}
+```
+
+**Advantages:**
+- ✅ Published on PyPI - stable releases
+- ✅ No installation needed
+- ✅ Automatic dependency management
+- ✅ Fast and reliable
+- ✅ Simple one-line configuration
+
+---
+
+### Method 2: Run Directly from GitHub (Latest Code)
+
+**Always get the latest development version:**
 
 ```bash
 # Run directly from GitHub
@@ -77,7 +120,15 @@ uvx --from git+https://github.com/Polly2014/BookBridge-MCP-Server bookbridge-ser
 }
 ```
 
-### Method 2: Local Development Installation
+**Advantages:**
+- ✅ Always the latest code
+- ✅ No local installation required
+- ✅ Automatic dependency management via uv
+- ✅ Great for testing new features
+
+---
+
+### Method 3: Local Development Installation
 
 #### 1. Install Dependencies
 ```bash
@@ -121,34 +172,31 @@ poetry run python examples/client_example.py
 # All checks: make check (or make.bat check on Windows)
 ```
 
-### Method 3: Using PyPI with uvx (Now Available!)
+---
 
-**The package is now published to PyPI!** You can run it with:
+## 📦 Installation Methods Comparison
+
+| Method | Command | Use Case | Installation Time |
+|--------|---------|----------|-------------------|
+| **PyPI** 🌟 | `uvx --from bookbridge-mcp bookbridge-server` | General use, production | ⚡ Fastest |
+| **GitHub** | `uvx --from git+https://... bookbridge-server` | Latest features, testing | ⚡ Fast |
+| **Local** | `poetry install && poetry run ...` | Development, contributions | 🐢 Requires setup |
+
+---
+
+### Method 4: Traditional pip Install (Alternative)
+
+If you prefer traditional pip installation:
 
 ```bash
-# Run directly from PyPI
-uvx --from bookbridge-mcp bookbridge-server
+# Install from PyPI
+pip install bookbridge-mcp
 
-# Or shorter version (if executable name matches)
-uvx bookbridge-mcp
+# Run the server
+bookbridge-server
 ```
 
-**Update your MCP configuration** to use PyPI:
-```json
-{
-  "servers": {
-    "Book-Bridge-MCP": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "bookbridge-mcp",
-        "bookbridge-server"
-      ],
-      "type": "stdio"
-    }
-  }
-}
-```
+**Note**: With `uvx`, you don't need to manually install - it handles everything automatically!
 
 ---
 
@@ -585,13 +633,38 @@ All checks must pass before merging.
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## 🔗 Links
+
+- **PyPI Package**: https://pypi.org/project/bookbridge-mcp/
+- **GitHub Repository**: https://github.com/Polly2014/BookBridge-MCP-Server
+- **Issues**: https://github.com/Polly2014/BookBridge-MCP-Server/issues
+- **Discussions**: https://github.com/Polly2014/BookBridge-MCP-Server/discussions
+
 ## 🆘 Support
 
 For issues and questions:
 
-1. Check the examples directory for usage patterns
-2. Review the MCP server logs for debugging
-3. Open an issue on GitHub for bugs or feature requests
+1. Check the [examples directory](examples/) for usage patterns
+2. Review the [installation guide](INSTALLATION.md) for detailed setup instructions
+3. Check [MCP configuration examples](MCP_CONFIG_EXAMPLES.md) for different setups
+4. Review the MCP server logs for debugging
+5. Open an [issue on GitHub](https://github.com/Polly2014/BookBridge-MCP-Server/issues) for bugs or feature requests
+
+## 📚 Documentation
+
+- [Installation Guide](INSTALLATION.md) - Detailed installation instructions
+- [Quick Start](QUICKSTART.md) - Quick reference card
+- [MCP Configuration Examples](MCP_CONFIG_EXAMPLES.md) - Configuration examples
+- [Changelog](CHANGELOG.md) - Version history
+- [Publishing Guide](PYPI_PUBLISHING.md) - For maintainers
+
+## ⭐ Show Your Support
+
+If you find BookBridge-MCP helpful, please consider:
+- ⭐ Starring the [GitHub repository](https://github.com/Polly2014/BookBridge-MCP-Server)
+- 📢 Sharing with others who might benefit
+- 🐛 Reporting issues or suggesting features
+- 🤝 Contributing code or documentation
 
 ---
 
